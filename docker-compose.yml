@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  # Postgres DB
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: easyteam
+      POSTGRES_PASSWORD: easyteampass
+      POSTGRES_DB: easyteamdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Next.js Frontend
+  frontend:
+    build: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: postgres://easyteam:easyteampass@localhost:5432/easyteamdb
+
+  # Node.js Backend
+  backend:
+    build: backend
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgres://easyteam:easyteampass@localhost:5432/easyteamdb
+    restart: on-failure
+
+volumes:
+  postgres_data:
+
+
